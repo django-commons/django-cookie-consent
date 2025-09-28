@@ -84,7 +84,7 @@ jobs:
 
 
   publish:
-    name: Publish package to PyPI
+    name: Publish packages to PyPI and NPM
     runs-on: ubuntu-latest
     needs:
       - tests
@@ -97,6 +97,7 @@ jobs:
       url: https://pypi.org/project/django-cookie-consent/
     permissions:
       id-token: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -124,12 +125,10 @@ jobs:
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
-      - name: Publish NPM package to Github
+      - name: Publish NPM package
         run: |
-          # Strip git ref prefix from version
           version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-
-          npm publish --new-version="$version" --provenance
+          npm publish --new-version="$version"
         working-directory: js
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
