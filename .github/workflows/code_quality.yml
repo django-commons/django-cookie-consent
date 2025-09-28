@@ -29,3 +29,4 @@ jobs:
       - run: tox
         env:
           TOXENV: ${{ matrix.toxenv }}
+          FORCE_COLOR: '1'

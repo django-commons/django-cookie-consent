@@ -237,3 +237,7 @@ texinfo_documents = [
 
 # Documents to append as an appendix to all manuals.
 texinfo_appendices = []
+
+linkcheck_ignore = [
+    r"https://(www\.)?npmjs\.com.*",  # IP/UA blocking...
+]
