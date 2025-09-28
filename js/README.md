@@ -6,6 +6,8 @@ The cookiebar module is shipped in the Python package itself and available throu
 django's staticfiles mechanism. This package is aimed at users wishing to include the
 assets in their own Javascript bundle through webpack/vite/...
 
+[![PyPI version][badge:pypi]][pypi]
+
 ## Installation
 
 ```bash
@@ -45,3 +47,6 @@ in the Python package:
 ```bash
 npm run build:django-static
 ```
+
+[pypi]: https://pypi.org/project/django-cookie-consent/
+[badge:pypi]: https://img.shields.io/pypi/v/django-cookie-consent.svg
