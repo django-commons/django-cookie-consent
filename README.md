@@ -13,6 +13,7 @@ Manage cookie information and let visitors give or reject consent for them.
 ![Supported python versions](https://img.shields.io/pypi/pyversions/django-cookie-consent)
 ![Supported Django versions](https://img.shields.io/pypi/djversions/django-cookie-consent)
 [![PyPI version][badge:pypi]][pypi]
+[![NPM version][badge:npm]][npm]
 
 **Features**
 
@@ -44,3 +45,5 @@ from the `docs` directory in this repository.
 [badge:docs]: https://readthedocs.org/projects/django-cookie-consent/badge/?version=latest
 [pypi]: https://pypi.org/project/django-cookie-consent/
 [badge:pypi]: https://img.shields.io/pypi/v/django-cookie-consent.svg
+[npm]: https://www.npmjs.com/package/django-cookie-consent
+[badge:npm]: https://img.shields.io/npm/v/django-cookie-consent
