@@ -2,6 +2,37 @@
 Changelog
 =========
 
+0.9.0 (2025-09-28)
+------------------
+
+Maintenance and bugfix release.
+
+**💥 Breaking changes**
+
+* Dropped support for Python 3.8 (end-of-life).
+* Dropped support for Python 3.9 (soon end-of-life).
+
+**New features**
+
+* [#114] You can now customize the redirect behaviour after accepting/declining cookies,
+  using the new ``COOKIE_CONSENT_SUCCESS_URL`` setting.
+* The admin now displays a warning for cookie groups that have no cookies in them.
+
+**Bugfixes**
+
+* [#135] Make cookie parsing and serialization more robust.
+
+**Project maintenance**
+
+* Transferred the package from the jazzband Github organization to django-commons, and
+  updated all community-related documents like the code of conduct.
+* Updated the package metadata to latest format.
+* Bumped minimum required setuptools version to build the package.
+* Replaced black and isort with Ruff for linting and code-formatting duties.
+* Improved the test suite.
+* The PyPI and NPM packages are now automatically published with Trusted Publishing,
+  enhancing supply-chain security.
+
 0.8.0 (2025-05-30)
 ------------------
 
