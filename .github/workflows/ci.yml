@@ -108,6 +108,7 @@ jobs:
         with:
           node-version-file: 'js/.nvmrc'
           cache: npm
+          cache-dependency-path: js/package-lock.json
           registry-url: 'https://registry.npmjs.org'
 
       # Required to ensure the build artifacts are in the packages.
