@@ -41,7 +41,7 @@ This release establishes the public API for accept/decline views.
       </form>
 
 * [#106] The cookie accept/views are no longer ``csrf_exempt``.
-* The legacy cookiebar JS is removed.
+* [#108] The legacy cookiebar JS is removed.
 
 **New features**
 

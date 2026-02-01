@@ -20,7 +20,7 @@ a wrapper around this anyway).
        cd django-cookie-consent
 
 #. Create a virtual environment for the project, using any supported Python version
-   (3.8+) and activate it
+   (3.10+) and activate it
 
    .. code-block:: bash
 

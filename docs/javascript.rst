@@ -275,18 +275,4 @@ The ``onShow``, ``onAccept`` and ``onDecline`` hooks allow you to perform additi
 actions on the main events. You can add your own markup and Javascript for more advanced
 user experiences.
 
-Integration with your Javascript stack
---------------------------------------
-
-The source code is written in modern Javascript and you should be able to import the
-module in Webpack-based builds (or similar). Likely the most challenging aspect is
-getting the frontend-stack to pick up your files. Running ``manage.py collectstatic``
-could help in ensuring that the source files are in a deterministic location, like
-``<PROJECT_ROOT>/static/cookie_consent/cookiebar.module.js``.
-
-.. note:: We're looking into possibly publishing an NPM package *somewhere* to make this
-   easier to work with.
-
-Let us know how we can improve this though!
-
 .. _Babel: https://babeljs.io/
