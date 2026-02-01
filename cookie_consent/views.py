@@ -94,9 +94,6 @@ class CookieGroupDeclineView(CookieGroupBaseProcessView):
 
     cookie_process_action = "decline"
 
-    def delete(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
 
 class CookieStatusView(View):
     """
