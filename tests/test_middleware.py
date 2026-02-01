@@ -32,10 +32,11 @@ class CleanCookiesMiddlewareTests(TestCase):
     def _accept_and_set_cookie(self):
         with self.subTest("initial setup"):
             # ensure we start with cookies first being accepted
-            endpoint = reverse("cookie_consent_accept", kwargs={"varname": "optional"})
+            endpoint = reverse("cookie_consent_accept")
 
             consent_response = self.client.post(
                 endpoint,
+                data={"cookie_groups": ["optional"]},
                 follow=True,
                 headers={"x-requested-with": "XMLHttpRequest"},
             )
@@ -65,9 +66,11 @@ class CleanCookiesMiddlewareTests(TestCase):
         self._accept_and_set_cookie()
 
         with self.subTest("decline prevously accepted group"):
-            url = reverse("cookie_consent_decline", kwargs={"varname": "optional"})
+            url = reverse("cookie_consent_decline")
 
-            decline_response = self.client.post(url, follow=True)
+            decline_response = self.client.post(
+                url, data={"cookie_groups": ["optional"]}, follow=True
+            )
 
             self.assertEqual(decline_response.status_code, 200)
 

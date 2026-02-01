@@ -1,7 +1,6 @@
 import warnings
 
 from django import template
-from django.urls import reverse
 from django.utils.html import json_script
 
 from ..cache import all_cookie_groups as get_all_cookie_groups
@@ -66,26 +65,6 @@ def cookie_consent_enabled(request):
     Filter returns if cookie consent enabled for this request.
     """
     return is_cookie_consent_enabled(request)
-
-
-@register.simple_tag
-def cookie_consent_accept_url(cookie_groups):
-    """
-    Assignement tag returns url for accepting given concept groups.
-    """
-    varnames = ",".join([g.varname for g in cookie_groups])
-    url = reverse("cookie_consent_accept", kwargs={"varname": varnames})
-    return url
-
-
-@register.simple_tag
-def cookie_consent_decline_url(cookie_groups):
-    """
-    Assignement tag returns url for declining given concept groups.
-    """
-    varnames = ",".join([g.varname for g in cookie_groups])
-    url = reverse("cookie_consent_decline", kwargs={"varname": varnames})
-    return url
 
 
 @register.simple_tag

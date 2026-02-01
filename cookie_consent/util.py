@@ -1,9 +1,12 @@
 import datetime
 import logging
+from collections.abc import Callable, Collection
+
+from django.http import HttpRequest
 
 from .cache import all_cookie_groups, get_cookie, get_cookie_group
 from .conf import settings
-from .models import ACTION_ACCEPTED, ACTION_DECLINED, LogItem
+from .models import CookieGroup
 
 logger = logging.getLogger(__name__)
 
@@ -111,50 +114,11 @@ def get_cookie_value_from_request(request, varname, cookie=None):
     return None
 
 
-def get_cookie_groups(varname=None):
+def get_cookie_groups(varname: str = "") -> Collection[CookieGroup]:
     if not varname:
         return all_cookie_groups().values()
     keys = varname.split(",")
     return [g for k, g in all_cookie_groups().items() if k in keys]
-
-
-def accept_cookies(request, response, varname=None):
-    """
-    Accept cookies in Cookie Group specified by ``varname``.
-    """
-    cookie_dic = get_cookie_dict_from_request(request)
-    for cookie_group in get_cookie_groups(varname):
-        cookie_dic[cookie_group.varname] = cookie_group.get_version()
-        if settings.COOKIE_CONSENT_LOG_ENABLED:
-            LogItem.objects.create(
-                action=ACTION_ACCEPTED,
-                cookiegroup=cookie_group,
-                version=cookie_group.get_version(),
-            )
-    set_cookie_dict_to_response(response, cookie_dic)
-
-
-def delete_cookies(response, cookie_group):
-    if cookie_group.is_deletable:
-        for cookie in cookie_group.cookie_set.all():
-            response.delete_cookie(cookie.name, cookie.path, cookie.domain)
-
-
-def decline_cookies(request, response, varname=None):
-    """
-    Decline and delete cookies in CookieGroup specified by ``varname``.
-    """
-    cookie_dic = get_cookie_dict_from_request(request)
-    for cookie_group in get_cookie_groups(varname):
-        cookie_dic[cookie_group.varname] = settings.COOKIE_CONSENT_DECLINE
-        delete_cookies(response, cookie_group)
-        if settings.COOKIE_CONSENT_LOG_ENABLED:
-            LogItem.objects.create(
-                action=ACTION_DECLINED,
-                cookiegroup=cookie_group,
-                version=cookie_group.get_version(),
-            )
-    set_cookie_dict_to_response(response, cookie_dic)
 
 
 def are_all_cookies_accepted(request):
@@ -198,15 +162,12 @@ def get_declined_cookie_groups(request):
     return _get_cookie_groups_by_state(request, state=False)
 
 
-def is_cookie_consent_enabled(request):
+def is_cookie_consent_enabled(request: HttpRequest):
     """
     Returns if django-cookie-consent is enabled for given request.
     """
-    enabled = settings.COOKIE_CONSENT_ENABLED
-    if callable(enabled):
-        return enabled(request)
-    else:
-        return enabled
+    enabled: bool | Callable[[HttpRequest], bool] = settings.COOKIE_CONSENT_ENABLED
+    return enabled(request) if callable(enabled) else enabled
 
 
 # Deprecated
