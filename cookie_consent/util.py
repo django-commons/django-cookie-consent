@@ -1,9 +1,10 @@
 import datetime
 import logging
+from collections.abc import Collection
 
 from .cache import all_cookie_groups, get_cookie, get_cookie_group
 from .conf import settings
-from .models import ACTION_ACCEPTED, ACTION_DECLINED, LogItem
+from .models import ACTION_ACCEPTED, ACTION_DECLINED, CookieGroup, LogItem
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,7 @@ def get_cookie_value_from_request(request, varname, cookie=None):
     return None
 
 
-def get_cookie_groups(varname=None):
+def get_cookie_groups(varname: str = "") -> Collection[CookieGroup]:
     if not varname:
         return all_cookie_groups().values()
     keys = varname.split(",")

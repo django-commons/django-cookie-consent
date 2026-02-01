@@ -1,3 +1,5 @@
+from collections.abc import Mapping
+
 from django.core.cache import caches
 
 from .conf import settings
@@ -18,17 +20,17 @@ def _get_cache():
     return caches[settings.COOKIE_CONSENT_CACHE_BACKEND]
 
 
-def delete_cache():
+def delete_cache() -> None:
     cache = _get_cache()
     cache.delete(CACHE_KEY)
 
 
-def _get_cookie_groups_from_db():
+def _get_cookie_groups_from_db() -> Mapping[str, CookieGroup]:
     qs = CookieGroup.objects.filter(is_required=False).prefetch_related("cookie_set")
     return qs.in_bulk(field_name="varname")
 
 
-def all_cookie_groups():
+def all_cookie_groups() -> Mapping[str, CookieGroup]:
     """
     Get all cookie groups that are optional.
 
@@ -36,12 +38,14 @@ def all_cookie_groups():
     cache miss.
     """
     cache = _get_cache()
-    return cache.get_or_set(
+    result = cache.get_or_set(
         CACHE_KEY, _get_cookie_groups_from_db, timeout=CACHE_TIMEOUT
     )
+    assert result is not None
+    return result
 
 
-def get_cookie_group(varname):
+def get_cookie_group(varname: str) -> CookieGroup | None:
     return all_cookie_groups().get(varname)
 
 
