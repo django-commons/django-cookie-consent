@@ -2,6 +2,56 @@
 Changelog
 =========
 
+????? (2026-02-??)
+------------------
+
+This release establishes the public API for accept/decline views.
+
+**💥 Breaking changes**
+
+* The views/urls for accepting and declining cookies are consolidated. The patterns
+  ``accept/<varname>/`` and ``decline/<varname>/`` are removed in favour of the plain
+  ``accept/`` and ``decline/`` patterns. The associated URL names have also been cleaned
+  up:
+
+  * ``cookie_consent_accept_all`` - removed, use ``cookie_consent_accept`` instead.
+  * ``cookie_consent_decline_all`` - removed, use ``cookie_consent_decline`` instead.
+  * ``cookie_consent_accept`` no longer takes a ``varname`` argument.
+  * ``cookie_consent_decline`` no longer takes a ``varname`` argument.
+
+  If you have custom templates, you should do the following replacements:
+
+  From:
+
+  .. code-block:: django
+
+      <form action="{% url 'cookie_consent_accept' varname=cookiegroup.varname %}" method="post">
+          {% csrf_token %}
+          <button type="submit">Accept</button>
+      </form>
+
+  to:
+
+  .. code-block:: django
+
+      <form action="{% url 'cookie_consent_accept' %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="cookie_groups" value="{{ cookiegroup.varname }}">
+          <button type="submit">Accept</button>
+      </form>
+
+* [#106] The cookie accept/views are no longer ``csrf_exempt``.
+* The legacy cookiebar JS is removed.
+
+**New features**
+
+* [#106] The accept/decline views now take the requested cookie groups as POST body
+  parameters.
+
+**Project maintenance**
+
+* [#106] Converted more tests to pytest style and refactored accept/decline views.
+
 0.9.0 (2025-09-28)
 ------------------
 

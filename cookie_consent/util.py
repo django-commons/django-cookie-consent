@@ -1,6 +1,8 @@
 import datetime
 import logging
-from collections.abc import Collection
+from collections.abc import Callable, Collection
+
+from django.http import HttpRequest
 
 from .cache import all_cookie_groups, get_cookie, get_cookie_group
 from .conf import settings
@@ -160,15 +162,12 @@ def get_declined_cookie_groups(request):
     return _get_cookie_groups_by_state(request, state=False)
 
 
-def is_cookie_consent_enabled(request):
+def is_cookie_consent_enabled(request: HttpRequest):
     """
     Returns if django-cookie-consent is enabled for given request.
     """
-    enabled = settings.COOKIE_CONSENT_ENABLED
-    if callable(enabled):
-        return enabled(request)
-    else:
-        return enabled
+    enabled: bool | Callable[[HttpRequest], bool] = settings.COOKIE_CONSENT_ENABLED
+    return enabled(request) if callable(enabled) else enabled
 
 
 # Deprecated

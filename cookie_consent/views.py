@@ -61,7 +61,7 @@ class CookieGroupBaseProcessView(RedirectURLMixin, View):
 
         if not form.is_valid():
             if is_ajax_like(request):
-                return JsonResponse(form.errors.as_data())
+                return JsonResponse(form.errors.get_json_data())
             else:
                 return HttpResponse(form.errors.render())
 
@@ -113,14 +113,10 @@ class CookieStatusView(View):
         accepted = get_accepted_cookie_groups(request)
         declined = get_declined_cookie_groups(request)
         not_accepted_or_declined = get_not_accepted_or_declined_cookie_groups(request)
-        # TODO: change this csv URL param into proper POST params
-        varnames = ",".join([group.varname for group in not_accepted_or_declined])
         data = {
             "csrftoken": get_csrf_token(request),
-            "acceptUrl": reverse("cookie_consent_accept", kwargs={"varname": varnames}),
-            "declineUrl": reverse(
-                "cookie_consent_decline", kwargs={"varname": varnames}
-            ),
+            "acceptUrl": reverse("cookie_consent_accept"),
+            "declineUrl": reverse("cookie_consent_decline"),
             "acceptedCookieGroups": [group.varname for group in accepted],
             "declinedCookieGroups": [group.varname for group in declined],
             "notAcceptedOrDeclinedCookieGroups": [

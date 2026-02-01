@@ -41,9 +41,6 @@
     {% if request|cookie_consent_enabled %}
         {% not_accepted_or_declined_cookie_groups request as cookie_groups %}
 
-        {% cookie_consent_accept_url cookie_groups as url_accept %}
-        {% cookie_consent_decline_url cookie_groups as url_decline %}
-
         {# Set up the data and template for dynamic JS cookie bar #}
         {% all_cookie_groups 'cookie-consent__cookie-groups' %}
         {% comment %}

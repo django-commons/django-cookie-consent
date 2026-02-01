@@ -4,6 +4,8 @@ from django import template
 from django.urls import reverse
 from django.utils.html import json_script
 
+from typing_extensions import deprecated
+
 from ..cache import all_cookie_groups as get_all_cookie_groups
 from ..conf import settings
 from ..util import (
@@ -68,6 +70,7 @@ def cookie_consent_enabled(request):
     return is_cookie_consent_enabled(request)
 
 
+@deprecated("URLs no longer take varname kwargs")
 @register.simple_tag
 def cookie_consent_accept_url(cookie_groups):
     """
@@ -78,6 +81,7 @@ def cookie_consent_accept_url(cookie_groups):
     return url
 
 
+@deprecated("URLs no longer take varname kwargs")
 @register.simple_tag
 def cookie_consent_decline_url(cookie_groups):
     """

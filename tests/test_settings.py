@@ -24,11 +24,14 @@ pytestmark = pytest.mark.django_db
         ("SAMESITE", "Strict", {"samesite": "Strict"}),
     ],
 )
-def test_cookie_consent_cookie_options(settings, client, setting, value, assertion):
-    accept_all_url = reverse("cookie_consent_accept_all")
+@pytest.mark.django_db
+def test_cookie_consent_cookie_options(
+    settings, client, optional_cookiegroup, setting, value, assertion
+):
+    accept_url = reverse("cookie_consent_accept")
     setattr(settings, f"COOKIE_CONSENT_{setting}", value)
 
-    client.post(accept_all_url)
+    client.post(accept_url, data={"all_groups": "true"})
 
     cookie = client.cookies[settings.COOKIE_CONSENT_NAME]
     for key, expected in assertion.items():
