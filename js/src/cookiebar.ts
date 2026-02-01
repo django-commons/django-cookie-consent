@@ -147,15 +147,24 @@ export class FetchClient {
     return this.cookieStatus;
   };
 
-  async saveCookiesStatusBackend (urlProperty: 'acceptUrl' | 'declineUrl') {
+  async saveCookiesStatusBackend (
+    urlProperty: 'acceptUrl' | 'declineUrl',
+    cookieGroups: CookieGroup[],
+  ) {
     const cookieStatus = await this.getCookieStatus();
     const url = cookieStatus[urlProperty];
     if (!url) {
       throw new Error(`Missing url for ${urlProperty} - was the cookie status not loaded properly?`);
     }
 
+    const formData = new FormData();
+    for (const group of cookieGroups) {
+      formData.append('cookie_groups', group.varname);
+    }
+
     await window.fetch(url, {
       method: 'POST',
+      body: formData,
       credentials: 'same-origin',
       headers: {
         ...DEFAULT_FETCH_HEADERS,
@@ -223,7 +232,7 @@ const registerEvents = ({
       const acceptedGroups = filterCookieGroups(cookieGroups, accepted.concat(undecided));
       onAccept?.(acceptedGroups, event);
       // trigger async action, but don't wait for completion
-      client.saveCookiesStatusBackend('acceptUrl');
+      client.saveCookiesStatusBackend('acceptUrl', acceptedGroups);
       cookieBarNode.parentNode!.removeChild(cookieBarNode);
     });
   }
@@ -235,7 +244,7 @@ const registerEvents = ({
       const declinedGroups = filterCookieGroups(cookieGroups, declined.concat(undecided));
       onDecline?.(declinedGroups, event);
       // trigger async action, but don't wait for completion
-      client.saveCookiesStatusBackend('declineUrl');
+      client.saveCookiesStatusBackend('declineUrl', declinedGroups);
       cookieBarNode.parentNode!.removeChild(cookieBarNode);
     });
   }
