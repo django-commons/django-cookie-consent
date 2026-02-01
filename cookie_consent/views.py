@@ -1,16 +1,22 @@
+from typing import Literal
+
 from django.contrib.auth.views import RedirectURLMixin
-from django.core.exceptions import SuspiciousOperation
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseBase,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.middleware.csrf import get_token as get_csrf_token
 from django.urls import reverse
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.generic import ListView, View
 
 from .conf import settings
+from .forms import ProcessCookiesForm
 from .models import CookieGroup
+from .processor import CookiesProcessor
 from .util import (
-    accept_cookies,
-    decline_cookies,
     get_accepted_cookie_groups,
     get_declined_cookie_groups,
     get_not_accepted_or_declined_cookie_groups,
@@ -36,31 +42,40 @@ class CookieGroupListView(ListView):
 
 
 class CookieGroupBaseProcessView(RedirectURLMixin, View):
-    def get_success_url(self):
-        """
-        If user adds a 'next' as URL parameter or hidden input,
-        redirect to the value of 'next'. Otherwise, redirect to
-        cookie consent group list
-        """
-        redirect_to = self.request.POST.get("next", self.request.GET.get("next"))
-        if redirect_to and not url_has_allowed_host_and_scheme(
-            url=redirect_to,
-            allowed_hosts=self.get_success_url_allowed_hosts(),
-            require_https=self.request.is_secure(),
-        ):
-            raise SuspiciousOperation("Unsafe open redirect suspected.")
-        return redirect_to or settings.COOKIE_CONSENT_SUCCESS_URL
+    """
+    Process the cookie groups submitted in the POST request (or URL parameters).
 
-    def process(self, request, response, varname):  # pragma: no cover
-        raise NotImplementedError()
+    :class:`RedirectURLMixin` takes care of the hardening against open redirects.
+    """
 
-    def post(self, request, *args, **kwargs):
-        varname = kwargs.get("varname", None)
+    cookie_process_action: Literal["accept", "decline"]
+    """
+    Processing action to apply, must be set on the subclasses.
+    """
+
+    def get_default_redirect_url(self) -> str:
+        return settings.COOKIE_CONSENT_SUCCESS_URL
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        form = ProcessCookiesForm(data=request.POST)
+
+        if not form.is_valid():
+            if is_ajax_like(request):
+                return JsonResponse(form.errors.as_data())
+            else:
+                return HttpResponse(form.errors.render())
+
+        cookie_groups = form.get_cookie_groups()
+
+        response: HttpResponseBase
         if is_ajax_like(request):
             response = HttpResponse()
         else:
             response = HttpResponseRedirect(self.get_success_url())
-        self.process(request, response, varname)
+
+        processor = CookiesProcessor(request, response)
+        processor.process(cookie_groups, action=self.cookie_process_action)
+
         return response
 
 
@@ -69,8 +84,7 @@ class CookieGroupAcceptView(CookieGroupBaseProcessView):
     View to accept CookieGroup.
     """
 
-    def process(self, request, response, varname):
-        accept_cookies(request, response, varname)
+    cookie_process_action = "accept"
 
 
 class CookieGroupDeclineView(CookieGroupBaseProcessView):
@@ -78,8 +92,7 @@ class CookieGroupDeclineView(CookieGroupBaseProcessView):
     View to decline CookieGroup.
     """
 
-    def process(self, request, response, varname):
-        decline_cookies(request, response, varname)
+    cookie_process_action = "decline"
 
     def delete(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
