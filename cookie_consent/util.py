@@ -1,4 +1,3 @@
-import datetime
 import logging
 from collections.abc import Callable, Collection
 
@@ -162,41 +161,9 @@ def get_declined_cookie_groups(request):
     return _get_cookie_groups_by_state(request, state=False)
 
 
-def is_cookie_consent_enabled(request: HttpRequest):
+def is_cookie_consent_enabled(request: HttpRequest) -> bool:
     """
     Returns if django-cookie-consent is enabled for given request.
     """
     enabled: bool | Callable[[HttpRequest], bool] = settings.COOKIE_CONSENT_ENABLED
     return enabled(request) if callable(enabled) else enabled
-
-
-# Deprecated
-def get_cookie_string(cookie_dic):
-    """
-    Returns cookie in format suitable for use in javascript.
-    """
-    expires = datetime.datetime.now() + datetime.timedelta(
-        seconds=settings.COOKIE_CONSENT_MAX_AGE
-    )
-    cookie_str = "{}={}; expires={}; path=/".format(
-        settings.COOKIE_CONSENT_NAME,
-        dict_to_cookie_str(cookie_dic),
-        expires.strftime("%a, %d %b %Y %H:%M:%S GMT"),
-    )
-    return cookie_str
-
-
-def get_accepted_cookies(request):
-    """
-    Returns all accepted cookies.
-    """
-    cookie_dic = get_cookie_dict_from_request(request)
-    accepted_cookies = []
-    for cookie_group in all_cookie_groups().values():
-        version = cookie_dic.get(cookie_group.varname, None)
-        if not version or version == settings.COOKIE_CONSENT_DECLINE:
-            continue
-        for cookie in cookie_group.cookie_set.all():
-            if version >= cookie.get_version():
-                accepted_cookies.append(cookie)  # noqa: PERF401
-    return accepted_cookies
