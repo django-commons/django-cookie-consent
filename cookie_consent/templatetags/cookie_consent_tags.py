@@ -1,6 +1,8 @@
 import warnings
+from collections.abc import Collection
 
 from django import template
+from django.http import HttpRequest
 from django.utils.html import json_script
 
 from ..cache import all_cookie_groups as get_all_cookie_groups
@@ -14,36 +16,45 @@ from ..util import (
     get_not_accepted_or_declined_cookie_groups,
     is_cookie_consent_enabled,
 )
+from .models import CookieGroup
 
 register = template.Library()
 
 
 @register.filter
-def cookie_group_accepted(request, arg):
+def cookie_group_accepted(request: HttpRequest, group_or_cookie: str) -> bool:
     """
-    Filter returns if cookie group is accepted.
+    Return ``True`` if the cookie group/cookie is accepted.
 
     Examples:
-    ::
+
+    .. code-block:: django
 
         {{ request|cookie_group_accepted:"analytics" }}
         {{ request|cookie_group_accepted:"analytics=*:.google.com" }}
     """
-    value = get_cookie_value_from_request(request, *arg.split("="))
+    value = get_cookie_value_from_request(request, *group_or_cookie.split("="))
     return value is True
 
 
 @register.filter
-def cookie_group_declined(request, arg):
+def cookie_group_declined(request: HttpRequest, group_or_cookie: str) -> bool:
     """
-    Filter returns if cookie group is declined.
+    Return ``True`` if the cookie group/cookie is declined.
+
+    Examples:
+
+    .. code-block:: django
+
+        {{ request|cookie_group_declined:"analytics" }}
+        {{ request|cookie_group_declined:"analytics=*:.google.com" }}
     """
-    value = get_cookie_value_from_request(request, *arg.split("="))
+    value = get_cookie_value_from_request(request, *group_or_cookie.split("="))
     return value is False
 
 
 @register.filter
-def all_cookies_accepted(request):
+def all_cookies_accepted(request: HttpRequest) -> bool:
     """
     Filter returns if all cookies are accepted.
     """
@@ -51,18 +62,19 @@ def all_cookies_accepted(request):
 
 
 @register.simple_tag
-def not_accepted_or_declined_cookie_groups(request):
+def not_accepted_or_declined_cookie_groups(
+    request: HttpRequest,
+) -> Collection[CookieGroup]:
     """
-    Assignement tag returns cookie groups that does not yet given consent
-    or decline.
+    Return the cookie groups for which no explicit accept or decline has been given.
     """
     return get_not_accepted_or_declined_cookie_groups(request)
 
 
 @register.filter
-def cookie_consent_enabled(request):
+def cookie_consent_enabled(request: HttpRequest) -> bool:
     """
-    Filter returns if cookie consent enabled for this request.
+    Indicate whether the cookie-consent app is enabled or not.
     """
     return is_cookie_consent_enabled(request)
 

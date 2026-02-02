@@ -79,7 +79,7 @@ def set_cookie_dict_to_response(response, dic):
     )
 
 
-def get_cookie_value_from_request(request, varname, cookie=None):
+def get_cookie_value_from_request(request: HttpRequest, varname: str, cookie: str = ""):
     """
     Returns if cookie group or its specific cookie has been accepted.
 
