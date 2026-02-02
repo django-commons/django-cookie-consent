@@ -1,7 +1,7 @@
 import logging
 from collections.abc import Callable, Collection
 
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseBase
 
 from .cache import all_cookie_groups, get_cookie, get_cookie_group
 from .conf import settings
@@ -41,7 +41,7 @@ def _contains_invalid_characters(*inputs: str) -> bool:
     return False
 
 
-def dict_to_cookie_str(dic) -> str:
+def dict_to_cookie_str(dic: dict[str, str]) -> str:
     """
     Serialize a dictionary of cookie-group metadata to a string.
 
@@ -61,19 +61,21 @@ def dict_to_cookie_str(dic) -> str:
     return "|".join(_gen_pairs())
 
 
-def get_cookie_dict_from_request(request):
-    cookie_str = request.COOKIES.get(settings.COOKIE_CONSENT_NAME)
+def get_cookie_dict_from_request(request: HttpRequest) -> dict[str, str]:
+    cookie_str = request.COOKIES.get(settings.COOKIE_CONSENT_NAME, "")
     return parse_cookie_str(cookie_str)
 
 
-def set_cookie_dict_to_response(response, dic):
+def set_cookie_dict_to_response(
+    response: HttpResponseBase, dic: dict[str, str]
+) -> None:
     response.set_cookie(
         settings.COOKIE_CONSENT_NAME,
         dict_to_cookie_str(dic),
         max_age=settings.COOKIE_CONSENT_MAX_AGE,
         domain=settings.COOKIE_CONSENT_DOMAIN,
-        secure=settings.COOKIE_CONSENT_SECURE or None,
-        httponly=settings.COOKIE_CONSENT_HTTPONLY or None,
+        secure=settings.COOKIE_CONSENT_SECURE,
+        httponly=settings.COOKIE_CONSENT_HTTPONLY,
         samesite=settings.COOKIE_CONSENT_SAMESITE,
     )
 
@@ -120,7 +122,7 @@ def get_cookie_groups(varname: str = "") -> Collection[CookieGroup]:
     return [g for k, g in all_cookie_groups().items() if k in keys]
 
 
-def are_all_cookies_accepted(request):
+def are_all_cookies_accepted(request: HttpRequest) -> bool:
     """
     Returns if all cookies are accepted.
     """
@@ -132,7 +134,7 @@ def are_all_cookies_accepted(request):
     )
 
 
-def _get_cookie_groups_by_state(request, state: bool | None):
+def _get_cookie_groups_by_state(request, state: bool | None) -> Collection[CookieGroup]:
     return [
         cookie_group
         for cookie_group in get_cookie_groups()
@@ -140,21 +142,23 @@ def _get_cookie_groups_by_state(request, state: bool | None):
     ]
 
 
-def get_not_accepted_or_declined_cookie_groups(request):
+def get_not_accepted_or_declined_cookie_groups(
+    request: HttpRequest,
+) -> Collection[CookieGroup]:
     """
     Returns all cookie groups that are neither accepted or declined.
     """
     return _get_cookie_groups_by_state(request, state=None)
 
 
-def get_accepted_cookie_groups(request):
+def get_accepted_cookie_groups(request: HttpRequest) -> Collection[CookieGroup]:
     """
     Returns all cookie groups that are accepted.
     """
     return _get_cookie_groups_by_state(request, state=True)
 
 
-def get_declined_cookie_groups(request):
+def get_declined_cookie_groups(request: HttpRequest) -> Collection[CookieGroup]:
     """
     Returns all cookie groups that are declined.
     """
