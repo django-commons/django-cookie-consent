@@ -44,6 +44,10 @@ This release establishes the public API for accept/decline views.
 * [#108] The legacy cookiebar JS is removed.
 * [#106] The ``cookie_consent_accept_url`` and ``cookie_consent_decline_url`` template
   tags are removed due to the URL structure changing.
+* [#108] Removed the ``get_accept_cookie_groups_cookie_string``,
+  ``get_decline_cookie_groups_cookie_string``, ``js_type_for_cookie_consent`` and
+  ``accepted_cookies`` template tags due to being incompatible with template/view
+  caching.
 
 **New features**
 

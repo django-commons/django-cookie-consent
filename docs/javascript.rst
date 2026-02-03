@@ -77,7 +77,7 @@ data (in a page-cache compatible manner):
     {% all_cookie_groups 'cookie-consent__cookie-groups' %}
     {# Emits a <script type="application/json" id="cookie-consent__cookie-groups">...</script> tag #}
 
-**Include a script that calls the ``showCookieBar`` function**
+**Include a script that calls the showCookieBar function**
 
 The most straight-forward way is to include this in your Django template:
 
@@ -169,6 +169,8 @@ should provide them. Please check the source code for their default values.
 * ``csrfHeaderName`` - HTTP header name for the CSRF Token. Defaults to Django's default
   value, so if you have a non-default ``settings.CSRF_HEADER_NAME``, you must provide
   this.
+
+.. _javascript_enable_scripts:
 
 Enabling other scripts after cookies were accepted
 ==================================================

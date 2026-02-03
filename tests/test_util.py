@@ -10,7 +10,6 @@ from cookie_consent.conf import settings
 from cookie_consent.models import Cookie, CookieGroup
 from cookie_consent.util import (
     dict_to_cookie_str,
-    get_accepted_cookies,
     get_cookie_groups,
     get_cookie_value_from_request,
     is_cookie_consent_enabled,
@@ -122,12 +121,6 @@ class UtilTest(TestCase):
         )
         self.assertIn(self.cookie_group, get_cookie_groups("foo,optional"))
         self.assertIn(cookie_group2, get_cookie_groups("foo,optional"))
-
-    def test_get_accepted_cookies(self):
-        cookie_str = dict_to_cookie_str({"optional": self.cookie_group.get_version()})
-        self.request.COOKIES[settings.COOKIE_CONSENT_NAME] = cookie_str
-        cookies = get_accepted_cookies(self.request)
-        self.assertIn(self.cookie, cookies)
 
 
 @example({"": "|"})
