@@ -34,6 +34,7 @@ User Guide
    example_app
    reference/index
    contributing
+   migrating-1.0
    changelog
 
 Indices and tables
