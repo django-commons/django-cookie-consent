@@ -135,12 +135,8 @@ After updating changelogs etc.
 
 .. code-block:: bash
 
-    tbump {new-version} --only-patch
-    cd js
-    npm version major|minor|patch --no-git-tag-version
-    cd ..
-
+    bump-my-version bump major|minor|patch
+    bump-my-version bump pre_l
     git commit -am ":bookmark: Bump to version <X.Y.Z>"
-
     git tag -s X.Y.Z
     git push origin main --tags

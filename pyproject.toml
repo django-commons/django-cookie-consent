@@ -13,7 +13,7 @@ license = "BSD-2-Clause-first-lines"
 license-files = ["LICENSE"]
 keywords = ["cookies", "cookie-consent", "cookie bar"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.2",
@@ -58,7 +58,7 @@ docs = [
     "sphinx-rtd-theme",
 ]
 release = [
-    "tbump",
+    "bump-my-version",
 ]
 
 [tool.setuptools.dynamic]
@@ -121,3 +121,50 @@ section-order = [
 
 [tool.ruff.lint.isort.sections]
 "django" = ["django"]
+
+[tool.bumpversion]
+current_version = "1.0.0"
+parse = """(?x)
+    (?P<major>0|[1-9]\\d*)\\.
+    (?P<minor>0|[1-9]\\d*)\\.
+    (?P<patch>0|[1-9]\\d*)
+    (?:
+        -                             # dash separator for pre-release section
+        (?P<pre_l>[a-zA-Z-]+)\\.      # pre-release label
+        (?P<pre_n>0|[1-9]\\d*)        # pre-release version number
+    )?                                # pre-release section is optional
+"""
+serialize = [
+    "{major}.{minor}.{patch}-{pre_l}.{pre_n}",
+    "{major}.{minor}.{patch}",
+]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+ignore_missing_files = false
+tag = false
+sign_tags = false
+tag_name = "{new_version}"
+tag_message = ":bookmark: Bump version to {new_version} and update changelog"
+allow_dirty = false
+commit = false
+message = ":bookmark: Bump version to {new_version} and update changelog"
+commit_args = ""
+setup_hooks = []
+pre_commit_hooks = [
+    "cd js && npm i",  # ensure that package-lock.json is updated
+]
+post_commit_hooks = []
+
+[tool.bumpversion.parts.pre_l]
+values = ["beta", "final"]
+optional_value = "final"
+
+[[tool.bumpversion.files]]
+filename = "cookie_consent/__init__.py"
+
+[[tool.bumpversion.files]]
+filename = "js/package.json"
+search = "  \"version\": \"{current_version}\""
+replace = "  \"version\": \"{new_version}\""

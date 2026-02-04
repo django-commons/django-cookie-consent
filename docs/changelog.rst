@@ -2,61 +2,63 @@
 Changelog
 =========
 
-????? (2026-02-??)
+1.0.0 (2026-02-04)
 ------------------
 
-This release establishes the public API for accept/decline views.
+The long-awaited 1.0 version of django-cookie-consent is finally here!
+
+The project has seen numerous cleanups, clarifications and (hopefully) simplifications
+over the past few releases, but now the public API is considered stable and any future
+breaking changes will result in a major version bump.
+
+The documentation :ref:`Migrating to 1.0 <migrating_10>` is there to help you updating
+your projects, but don't hesitate to open a Github issue if you run into problems.
 
 **💥 Breaking changes**
 
-* The views/urls for accepting and declining cookies are consolidated. The patterns
-  ``accept/<varname>/`` and ``decline/<varname>/`` are removed in favour of the plain
-  ``accept/`` and ``decline/`` patterns. The associated URL names have also been cleaned
-  up:
+*Now* was the time to perform necessary cleanups that break the existing API/features.
+The upgrade documentation covers these in more detail.
 
-  * ``cookie_consent_accept_all`` - removed, use ``cookie_consent_accept`` instead.
-  * ``cookie_consent_decline_all`` - removed, use ``cookie_consent_decline`` instead.
-  * ``cookie_consent_accept`` no longer takes a ``varname`` argument.
-  * ``cookie_consent_decline`` no longer takes a ``varname`` argument.
+* [#106] Views and URLs rework:
 
-  If you have custom templates, you should do the following replacements:
+  * Removed the URL patterns ``accept/<varname>/`` and ``decline/<varname>/``.
+  * Renamed the ``cookie_consent_accept_all`` view name to ``cookie_consent_accept``.
+  * Renamed the ``cookie_consent_decline_all`` view name to ``cookie_consent_decline``.
+  * Replaced the ``CookieGroupBaseProcessView.process`` method with the new
+    ``CookiesProcessor`` utility class.
+  * The views no longer take the cookie groups/cookie group varnames from the
+    ``varname`` URL parameter - it has been removed.
+  * The cookie accept/decline views are no longer ``csrf_exempt`` and require a CRSF
+    token now.
+  * The ``cookie_consent_accept_url`` and ``cookie_consent_decline_url`` template
+    tags are removed due to the URL structure changes.
+  * Removed the ``DELETE`` method support for the cookie group decline view.
 
-  From:
+* [#108] Legacy cookiebar Javascript removal:
 
-  .. code-block:: django
+  * The legacy implementation is removed.
+  * Removed the ``get_accept_cookie_groups_cookie_string``,
+    ``get_decline_cookie_groups_cookie_string``, ``js_type_for_cookie_consent`` and
+    ``accepted_cookies`` template tags due to being incompatible with template/view
+    caching.
 
-      <form action="{% url 'cookie_consent_accept' varname=cookiegroup.varname %}" method="post">
-          {% csrf_token %}
-          <button type="submit">Accept</button>
-      </form>
-
-  to:
-
-  .. code-block:: django
-
-      <form action="{% url 'cookie_consent_accept' %}" method="post">
-          {% csrf_token %}
-          <input type="hidden" name="cookie_groups" value="{{ cookiegroup.varname }}">
-          <button type="submit">Accept</button>
-      </form>
-
-* [#106] The cookie accept/views are no longer ``csrf_exempt``.
-* [#108] The legacy cookiebar JS is removed.
-* [#106] The ``cookie_consent_accept_url`` and ``cookie_consent_decline_url`` template
-  tags are removed due to the URL structure changing.
-* [#108] Removed the ``get_accept_cookie_groups_cookie_string``,
-  ``get_decline_cookie_groups_cookie_string``, ``js_type_for_cookie_consent`` and
-  ``accepted_cookies`` template tags due to being incompatible with template/view
-  caching.
+* Dropped support for the end-of-life Django 5.1.
 
 **New features**
 
-* [#106] The accept/decline views now take the requested cookie groups as POST body
-  parameters.
+* Confirmed support for Django 6.0.
+* Confirmed support for Python 3.14.
+* [#106] You can now use plain HTTP POST form semantics to submit the cookie groups to
+  accept/decline.
+* Added static type annotations to the project and added the ``py.typed`` package marker.
 
 **Project maintenance**
 
-* [#106] Converted more tests to pytest style and refactored accept/decline views.
+* Added django-upgrade to pre-commit hooks.
+* Converted more tests to pytest style and refactored accept/decline views.
+* Cleaned up/updated the documentation.
+* Renamed the master branch to main.
+* Switch the version management tool from tbump to bump-my-version.
 
 0.9.0 (2025-09-28)
 ------------------
