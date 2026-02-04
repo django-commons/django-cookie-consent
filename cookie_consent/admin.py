@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.db.models import Count
+from django.http.request import HttpRequest
 from django.templatetags.l10n import localize
 from django.templatetags.static import static
 from django.utils.html import format_html
@@ -36,12 +37,12 @@ class CookieGroupAdmin(admin.ModelAdmin):
         "is_deletable",
     )
 
-    def get_queryset(self, request):
+    def get_queryset(self, request: HttpRequest):
         qs = super().get_queryset(request)
         return qs.annotate(num_cookies=Count("cookie"))
 
     @admin.display(ordering="num_cookies", description=_("# cookies"))
-    def num_cookies(self, obj):
+    def num_cookies(self, obj: CookieGroup):
         if (count := obj.num_cookies) > 0:
             return localize(count)
 

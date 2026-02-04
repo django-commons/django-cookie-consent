@@ -3,7 +3,7 @@ from collections.abc import Mapping
 from django.core.cache import caches
 
 from .conf import settings
-from .models import CookieGroup
+from .models import Cookie, CookieGroup
 
 CACHE_KEY = "cookie_consent_cache"
 CACHE_TIMEOUT = 60 * 60  # 60 minutes
@@ -49,7 +49,9 @@ def get_cookie_group(varname: str) -> CookieGroup | None:
     return all_cookie_groups().get(varname)
 
 
-def get_cookie(cookie_group, name, domain):
+def get_cookie(cookie_group: CookieGroup, name: str, domain: str) -> Cookie | None:
+    # loop over cookie set relation instead of doing a lookup query, as this should
+    # come from the cache and avoid hitting the database
     for cookie in cookie_group.cookie_set.all():
         if cookie.name == name and cookie.domain == domain:
             return cookie

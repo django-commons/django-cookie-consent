@@ -1,11 +1,11 @@
 import logging
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Iterator
 
 from django.http import HttpRequest, HttpResponseBase
 
 from .cache import all_cookie_groups, get_cookie, get_cookie_group
 from .conf import settings
-from .models import CookieGroup
+from .models import Cookie, CookieGroup
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +19,12 @@ def parse_cookie_str(cookie: str) -> dict[str, str]:
 
     bits = cookie.split(COOKIE_GROUP_SEP)
 
-    def _gen_pairs():
+    def _gen_pairs() -> Iterator[tuple[str, str]]:
         for possible_pair in bits:
             parts = possible_pair.split(KEY_VALUE_SEP)
             if len(parts) == 2:
-                yield parts
+                varname, cookie = parts
+                yield varname, cookie
             else:
                 logger.debug("cookie_value_discarded", extra={"value": possible_pair})
 
@@ -52,7 +53,7 @@ def dict_to_cookie_str(dic: dict[str, str]) -> str:
     Invalid key/value pairs are dropped.
     """
 
-    def _gen_pairs():
+    def _gen_pairs() -> Iterator[str]:
         for key, value in dic.items():
             if _contains_invalid_characters(key, value):
                 continue
@@ -80,37 +81,33 @@ def set_cookie_dict_to_response(
     )
 
 
-def get_cookie_value_from_request(request: HttpRequest, varname: str, cookie: str = ""):
+def get_cookie_value_from_request(
+    request: HttpRequest, varname: str, cookie: str = ""
+) -> bool | None:
     """
     Returns if cookie group or its specific cookie has been accepted.
 
     Returns True or False when cookie is accepted or declined or None
     if cookie is not set.
     """
-    cookie_dic = get_cookie_dict_from_request(request)
-    if not cookie_dic:
+    if not (cookie_dic := get_cookie_dict_from_request(request)):
+        return None
+    if not (cookie_group := get_cookie_group(varname=varname)):
         return None
 
-    cookie_group = get_cookie_group(varname=varname)
-    if not cookie_group:
-        return None
+    _cookie: Cookie | None = None
     if cookie:
         name, domain = cookie.split(":")
-        cookie = get_cookie(cookie_group, name, domain)
-    else:
-        cookie = None
+        _cookie = get_cookie(cookie_group, name, domain)
 
-    version = cookie_dic.get(varname, None)
+    match version := cookie_dic.get(varname, None):
+        case None:
+            return None
+        case str() if version == settings.COOKIE_CONSENT_DECLINE:
+            return False
 
-    if version == settings.COOKIE_CONSENT_DECLINE:
-        return False
-    if version is None:
-        return None
-    if not cookie:
-        v = cookie_group.get_version()
-    else:
-        v = cookie.get_version()
-    if version >= v:
+    reference_version = _cookie.get_version() if _cookie else cookie_group.get_version()
+    if version >= reference_version:
         return True
     return None
 

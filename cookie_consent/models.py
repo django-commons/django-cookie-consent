@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import re
-from typing import TypedDict
+from collections.abc import Callable
+from typing import ClassVar, ParamSpec, TypedDict, TypeVar
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -15,9 +18,12 @@ validate_cookie_name = RegexValidator(
     "invalid",
 )
 
+P = ParamSpec("P")
+T = TypeVar("T")
 
-def clear_cache_after(func):
-    def wrapper(*args, **kwargs):
+
+def clear_cache_after(func: Callable[P, T]) -> Callable[P, T]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs):
         from .cache import delete_cache
 
         return_value = func(*args, **kwargs)
@@ -32,9 +38,8 @@ class CookieGroupDict(TypedDict):
     name: str
     description: str
     is_required: bool
-    # TODO: should we output this? page cache busting would be
-    # required if we do this. Alternatively, set up a JSONView to output these?
-    # version: str
+    # The version is deliberately not included because it requires page/view cache
+    # busting if a new cookie gets added to the group, which we don't control.
 
 
 class BaseQueryset(models.query.QuerySet):
@@ -48,7 +53,7 @@ class BaseQueryset(models.query.QuerySet):
 
 
 class CookieGroupManager(models.Manager.from_queryset(BaseQueryset)):
-    def get_by_natural_key(self, varname):
+    def get_by_natural_key(self, varname: str) -> CookieGroup:
         return self.get(varname=varname)
 
 
@@ -74,7 +79,8 @@ class CookieGroup(models.Model):
     ordering = models.IntegerField(_("Ordering"), default=0)
     created = models.DateTimeField(_("Created"), auto_now_add=True, blank=True)
 
-    objects = CookieGroupManager()
+    objects: ClassVar[CookieGroupManager] = CookieGroupManager()  # pyright: ignore[reportIncompatibleVariableOverride]
+    cookie_set: ClassVar[CookieManager]
 
     class Meta:
         verbose_name = _("Cookie Group")
@@ -92,11 +98,15 @@ class CookieGroup(models.Model):
     def delete(self, *args, **kwargs):
         return super().delete(*args, **kwargs)
 
-    def natural_key(self):
+    def natural_key(self) -> tuple[str]:
         return (self.varname,)
 
     def get_version(self) -> str:
         try:
+            # this relies on the cookie set being ordered by most-recently created
+            # first.
+            # Note that we don't use `.first()` as that's a new query and bypasses
+            # the cache.
             return str(self.cookie_set.all()[0].get_version())
         except IndexError:
             return ""
@@ -112,7 +122,7 @@ class CookieGroup(models.Model):
 
 
 class CookieManager(models.Manager.from_queryset(BaseQueryset)):
-    def get_by_natural_key(self, name, domain, cookiegroup):
+    def get_by_natural_key(self, name: str, domain: str, cookiegroup: str) -> Cookie:
         group = CookieGroup.objects.get_by_natural_key(cookiegroup)
         return self.get(cookiegroup=group, name=name, domain=domain)
 
@@ -153,17 +163,17 @@ class Cookie(models.Model):
     def delete(self, *args, **kwargs):
         return super().delete(*args, **kwargs)
 
-    def natural_key(self):
+    def natural_key(self) -> tuple[str, str, str]:
         return (self.name, self.domain) + self.cookiegroup.natural_key()
 
-    natural_key.dependencies = ["cookie_consent.cookiegroup"]
+    natural_key.dependencies = ["cookie_consent.cookiegroup"]  # pyright: ignore[reportFunctionMemberAccess]
 
     @property
-    def varname(self):
+    def varname(self) -> str:
         group_varname = self.cookiegroup.varname
         return f"{group_varname}={self.name}:{self.domain}"
 
-    def get_version(self):
+    def get_version(self) -> str:
         return self.created.isoformat()
 
 
