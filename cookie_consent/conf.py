@@ -1,29 +1,35 @@
-from django.conf import settings  # NOQA
+from typing import Literal
+
+from django.conf import settings
+from django.urls import reverse_lazy
+from django.utils.functional import Promise
 
 from appconf import AppConf
-from django.urls import reverse_lazy
 
 __all__ = ["settings"]
 
 
 class CookieConsentConf(AppConf):
     # django-cookie-consent cookie settings that store the configuration
-    NAME = "cookie_consent"
+    NAME: str = "cookie_consent"
     # TODO: rename to AGE for parity with django settings
-    MAX_AGE = 60 * 60 * 24 * 365 * 1  # 1 year,
-    DOMAIN = None
-    SECURE = False
-    HTTPONLY = True
-    SAMESITE = "Lax"
+    MAX_AGE: int = 60 * 60 * 24 * 365 * 1  # 1 year,
+    DOMAIN: str | None = None
+    SECURE: bool = False
+    HTTPONLY: bool = True
+    SAMESITE: Literal["Strict", "Lax", "None", False] = "Lax"
 
-    DECLINE = "-1"
+    DECLINE: str = "-1"
 
-    ENABLED = True
+    ENABLED: bool = True
 
-    OPT_OUT = False
+    OPT_OUT: bool = False
 
-    CACHE_BACKEND = "default"
+    CACHE_BACKEND: str = "default"
 
-    LOG_ENABLED = True
+    LOG_ENABLED: bool = True
+    """
+    DeprecationWarning: in future versions the default may switch to log disabled.
+    """
 
-    SUCCESS_URL = reverse_lazy("cookie_consent_cookie_group_list")
+    SUCCESS_URL: str | Promise = reverse_lazy("cookie_consent_cookie_group_list")

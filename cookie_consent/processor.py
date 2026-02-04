@@ -69,7 +69,7 @@ class CookiesProcessor:
         ]
         LogItem.objects.bulk_create(log_items)
 
-    def _delete_cookies(self, cookie_groups: Collection[CookieGroup]):
+    def _delete_cookies(self, cookie_groups: Collection[CookieGroup]) -> None:
         for cookie_group in cookie_groups:
             if not cookie_group.is_deletable:
                 continue

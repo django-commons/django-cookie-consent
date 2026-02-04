@@ -1,3 +1,7 @@
+from collections.abc import Callable
+
+from django.http import HttpRequest, HttpResponseBase
+
 from .cache import all_cookie_groups
 from .conf import settings
 from .util import get_cookie_dict_from_request, is_cookie_consent_enabled
@@ -28,16 +32,16 @@ class CleanCookiesMiddleware:
     Note that this only applies if COOKIE_CONSENT_OPT_OUT is not set.
     """
 
-    def __init__(self, get_response):
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponseBase]):
         self.get_response = get_response
 
-    def __call__(self, request):
+    def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         if is_cookie_consent_enabled(request):
             self.process_response(request, response)
         return response
 
-    def process_response(self, request, response):
+    def process_response(self, request: HttpRequest, response: HttpResponseBase):
         cookie_dic = get_cookie_dict_from_request(request)
 
         cookies_to_delete = []
