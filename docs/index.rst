@@ -55,7 +55,7 @@ Indices and tables
 .. |ruff| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
     :target: https://github.com/astral-sh/ruff
 
-.. |coverage| image:: https://codecov.io/gh/django-commons/django-cookie-consent/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/gh/django-commons/django-cookie-consent/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/django-commons/django-cookie-consent
     :alt: Coverage status
 

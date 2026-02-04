@@ -143,4 +143,4 @@ After updating changelogs etc.
     git commit -am ":bookmark: Bump to version <X.Y.Z>"
 
     git tag -s X.Y.Z
-    git push origin master --tags
+    git push origin main --tags

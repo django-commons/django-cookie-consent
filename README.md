@@ -40,7 +40,7 @@ from the `docs` directory in this repository.
 [ruff]: https://github.com/astral-sh/ruff
 [badge:ruff]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json
 [codecov]: https://codecov.io/gh/django-commons/django-cookie-consent
-[badge:codecov]: https://codecov.io/gh/django-commons/django-cookie-consent/branch/master/graph/badge.svg
+[badge:codecov]: https://codecov.io/gh/django-commons/django-cookie-consent/branch/main/graph/badge.svg
 [docs]: https://django-cookie-consent.readthedocs.io/en/latest/?badge=latest
 [badge:docs]: https://readthedocs.org/projects/django-cookie-consent/badge/?version=latest
 [pypi]: https://pypi.org/project/django-cookie-consent/

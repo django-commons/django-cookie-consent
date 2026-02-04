@@ -39,7 +39,7 @@ dynamic = ["version"]
 
 [project.urls]
 Documentation = "https://django-cookie-consent.readthedocs.io/en/latest/"
-Changelog = "https://github.com/django-commons/django-cookie-consent/blob/master/docs/changelog.rst"
+Changelog = "https://github.com/django-commons/django-cookie-consent/blob/main/docs/changelog.rst"
 "Bug Tracker" = "https://github.com/django-commons/django-cookie-consent/issues"
 "Source Code" = "https://github.com/django-commons/django-cookie-consent"
 

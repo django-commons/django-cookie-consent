@@ -15,9 +15,9 @@ Alternatively, you can install directly from Github:
 
 .. code-block:: bash
 
-    pip install git+https://github.com/django-commons/django-cookie-consent@master#egg=django-cookie-consent
+    pip install git+https://github.com/django-commons/django-cookie-consent@main#egg=django-cookie-consent
 
-.. warning:: Installing from the master branch can be unstable. It is recommended to pin
+.. warning:: Installing from the main branch can be unstable. It is recommended to pin
    your installation to a specific git tag or commit.
 
 Configuration

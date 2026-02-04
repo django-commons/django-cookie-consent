@@ -4,7 +4,7 @@ name: Code quality checks
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - '*'
   pull_request:
