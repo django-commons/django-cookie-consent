@@ -1,3 +1,5 @@
+.. _settings:
+
 ========
 Settings
 ========
@@ -39,19 +41,22 @@ for more details about the meaning.
 
 ``COOKIE_CONSENT_DECLINE``
   decline value
+
   Default: ``-1``
 
 ``COOKIE_CONSENT_ENABLED``
-  boolean or callable that receives request and return boolean.
+  boolean or callable that receives request and returns a boolean.
 
-  IE if you want to enable cookie consent for debug or staff only::
+  For example, if you want to enable cookie consent for debug or staff only:
 
-    COOKIE_CONSENT_ENABLED = lambda r: DEBUG or (r.user.is_authenticated() and r.user.is_staff)
+  .. code-block:: python
+
+      COOKIE_CONSENT_ENABLED = lambda r: DEBUG or (r.user.is_authenticated and r.user.is_staff)
 
   Default: ``True``
 
 ``COOKIE_CONSENT_OPT_OUT``
-  Boolean value represents if cookies are opt-in or opt-out.
+  Boolean value represents if cookies are opt-in (``False``) or opt-out (``True``).
   Opt-out cookies are set until declined.
   Opt-in cookies are set only if accepted.
 
@@ -63,11 +68,15 @@ for more details about the meaning.
   Default: ``default``
 
 ``COOKIE_CONSENT_LOG_ENABLED``
-  Boolean value represents if user actions when they accepting and declining cookies will be logged. Turning it off might be useful for preventing your database from getting filled up with log items.
+  Boolean value represents if the accept/decline user actions will be logged to the
+  database. Turning it off might be useful for preventing your database from getting
+  filled up with log items.
 
   Default: ``True`` 
 
 ``COOKIE_CONSENT_SUCCESS_URL``
-  The success URL to redirect the user too after a successful accept/decline action. If
+  The success URL to redirect the user to after a successful accept/decline action. If
   a ``?next`` parameter is present in the request, then it takes priority over this
-  setting. Defaults to the URL of the built-in cookie list view.
+  setting.
+
+  Default: the URL of the built-in cookie list view.

@@ -39,9 +39,9 @@ You can then install the project with all the dev-tools:
 
 .. code-block:: bash
 
-   pip install -e .[tests,pep8,coverage,docs,release]
+   pip install -e .[tests,docs,release]
 
-Some frontend tooling is needed to:
+Some frontend tooling is needed too:
 
 * NodeJS (for the version, see ``.nvmrc``, you can use ``nvm``)
 
@@ -60,7 +60,7 @@ common in libraries, but it's fairly straightforward to emulate this:
 
 .. code-block:: bash
 
-    export DJANGO_SETTINGS_MODULE=testapp.settings
+    export DJANGO_SETTINGS_MODULE=testapp.settings PYTHONPATH=.
 
     django-admin migrate
     django-admin createsuperuser
@@ -119,7 +119,9 @@ You can now open the file ``_build/html/index.html`` in your browser.
 .. code-block:: bash
 
     export DJANGO_SETTINGS_MODULE=testapp.settings
+    cd cookie_consent
     django-admin makemessages --all
+    cd ..
 
 After translating the message, you need to compile the message catalogs:
 

@@ -24,7 +24,7 @@ a wrapper around this anyway).
 
    .. code-block:: bash
 
-       python3.10 -m venv ./env
+       python3.12 -m venv ./env
        source ./env/bin/activate
 
 #. Install the application and dependencies

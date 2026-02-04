@@ -30,23 +30,12 @@ User Guide
    concept
    usage
    javascript
-   example_app
    settings
+   example_app
+   reference/index
    contributing
+   migrating-1.0
    changelog
-
-API documentation
------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   api_models
-   api_views
-   api_util
-   api_templatetags
-   api_middleware
-
 
 Indices and tables
 ==================
