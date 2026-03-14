@@ -10,3 +10,4 @@ API Reference
    api_util
    api_templatetags
    api_middleware
+   management_commands
