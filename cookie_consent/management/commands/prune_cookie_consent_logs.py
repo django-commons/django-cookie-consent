@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from cookie_consent.models import LogItem
+from ...models import LogItem
 
 
 class Command(BaseCommand):

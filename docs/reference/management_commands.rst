@@ -2,12 +2,12 @@
 Management commands
 ====================
 
-prune_logs
-==========
+prune_cookie_consent_logs
+=========================
 
 .. code-block:: bash
 
-   python manage.py prune_logs [--days DAYS]
+   python manage.py prune_cookie_consent_logs [--days DAYS]
 
 Deletes :class:`~cookie_consent.models.LogItem` records older than the
 specified number of days.
@@ -22,6 +22,6 @@ specified number of days.
 
 .. code-block:: bash
 
-   python manage.py prune_logs --days 30
+   python manage.py prune_cookie_consent_logs --days 30
 
 This command is safe to run repeatedly.
