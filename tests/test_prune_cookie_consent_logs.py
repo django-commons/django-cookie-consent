@@ -18,9 +18,7 @@ def make_log_item(optional_cookiegroup):
             version="1",
         )
         created = timezone.now() - timedelta(days=days_old, **kwargs)
-        LogItem.objects.filter(pk=item.pk).update(
-            created=created
-        )
+        LogItem.objects.filter(pk=item.pk).update(created=created)
         return item
 
     return _make
