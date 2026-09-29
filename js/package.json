@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/django-commons/django-cookie-consent#readme",
   "devDependencies": {
-    "esbuild": "^0.25.3",
+    "esbuild": "^0.28.1",
     "typescript": "^5.4.5"
   }
 }
