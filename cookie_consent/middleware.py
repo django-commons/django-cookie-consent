@@ -19,10 +19,7 @@ def _should_delete_cookie(group_version: str | None) -> bool:
 
     # when we are opt-in and have no information whether the cookie group was accepted
     # or declined, delete the cookie(s).
-    if group_version is None:
-        return True
-
-    return False
+    return group_version is None
 
 
 class CleanCookiesMiddleware:
