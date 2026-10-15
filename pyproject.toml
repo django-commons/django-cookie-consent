@@ -107,6 +107,8 @@ extend-select = [
     "PERF",# perflint
     "B",   # flake8-bugbear
 ]
+ignore = ["N999", "RUF012"] # https://github.com/astral-sh/ruff/issues/5243
+exclude = ["**/migrations/*.py"] # its machine generated
 
 [tool.ruff.lint.isort]
 combine-as-imports = true

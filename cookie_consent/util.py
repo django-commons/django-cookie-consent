@@ -124,10 +124,8 @@ def are_all_cookies_accepted(request: HttpRequest) -> bool:
     Returns if all cookies are accepted.
     """
     return all(
-        [
-            get_cookie_value_from_request(request, cookie_group.varname)
-            for cookie_group in get_cookie_groups()
-        ]
+        get_cookie_value_from_request(request, cookie_group.varname)
+        for cookie_group in get_cookie_groups()
     )
 
 
