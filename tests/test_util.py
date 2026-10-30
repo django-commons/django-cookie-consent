@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -56,7 +56,7 @@ class UtilTest(TestCase):
 
     def test_get_cookie_value_from_request_declined(self):
         cookie_str = dict_to_cookie_str(
-            {"optional": datetime(1999, 1, 1, tzinfo=timezone.utc).isoformat()}
+            {"optional": datetime(1999, 1, 1, tzinfo=UTC).isoformat()}
         )
         self.request.COOKIES[settings.COOKIE_CONSENT_NAME] = cookie_str
         res = get_cookie_value_from_request(self.request, "optional")
