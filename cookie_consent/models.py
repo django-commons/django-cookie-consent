@@ -85,7 +85,7 @@ class CookieGroup(models.Model):
     class Meta:
         verbose_name = _("Cookie Group")
         verbose_name_plural = _("Cookie Groups")
-        ordering = ["ordering"]
+        ordering = ("ordering",)
 
     def __str__(self):
         return self.name
@@ -144,13 +144,13 @@ class Cookie(models.Model):
     class Meta:
         verbose_name = _("Cookie")
         verbose_name_plural = _("Cookies")
-        constraints = [
+        constraints: ClassVar[list[models.BaseConstraint]] = [
             models.UniqueConstraint(
                 fields=("cookiegroup", "name", "domain"),
                 name="natural_key",
             ),
         ]
-        ordering = ["-created"]
+        ordering = ("-created",)
 
     def __str__(self):
         return f"{self.name} {self.domain}{self.path}"
@@ -166,7 +166,7 @@ class Cookie(models.Model):
     def natural_key(self) -> tuple[str, str, str]:
         return (self.name, self.domain) + self.cookiegroup.natural_key()
 
-    natural_key.dependencies = ["cookie_consent.cookiegroup"]  # pyright: ignore[reportFunctionMemberAccess]
+    natural_key.dependencies = ("cookie_consent.cookiegroup",)  # pyright: ignore[reportFunctionMemberAccess]
 
     @property
     def varname(self) -> str:
@@ -198,7 +198,7 @@ class LogItem(models.Model):
     class Meta:
         verbose_name = _("Log item")
         verbose_name_plural = _("Log items")
-        ordering = ["-created"]
+        ordering = ("-created",)
 
     def __str__(self):
         return f"{self.cookiegroup.name} {self.version}"
