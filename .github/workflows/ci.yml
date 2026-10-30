@@ -10,14 +10,18 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   build-js:
     runs-on: ubuntu-latest
     name: Compile the frontend code
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/build-js
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: $/.github/actions/build-js
         with:
           npm-package: 'true'
           django-staticfiles: 'false'
@@ -26,19 +30,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13', '3.14']
-        django: ['4.2', '5.2', '6.0']
+        python: ['3.11', '3.12', '3.13', '3.14', '3.15']
+        django: ['5.2', '6.0', '6.1']
         exclude:
-          - python: '3.13'
-            django: '4.2'
-          - python: '3.14'
-            django: '4.2'
+          - python: '3.11'
+            django: '6.1'
+          - python: '3.15'
+            django: '5.2'
+          - python: '3.15'
+            django: '6.0'
 
     name: Run the test suite (Python ${{ matrix.python }}, Django ${{ matrix.django }})
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: ${{ matrix.python }}
 
@@ -51,7 +59,7 @@ jobs:
           DJANGO: ${{ matrix.django }}
 
       - name: Publish coverage report
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: reports/
@@ -61,12 +69,14 @@ jobs:
     name: Run the end-to-end tests
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
 
-      - uses: ./.github/actions/build-js
+      - uses: $/.github/actions/build-js
         with:
           npm-package: 'false'
           django-staticfiles: 'true'
@@ -80,8 +90,9 @@ jobs:
         run: tox -e e2e
 
       - name: Publish coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           directory: reports/
 
 
@@ -101,20 +112,23 @@ jobs:
       id-token: write
       contents: read
 
+    cache-mode: none
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: '3.12'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: 'js/.nvmrc'
-          cache: npm
-          cache-dependency-path: js/package-lock.json
+          package-manager-cache: false
           registry-url: 'https://registry.npmjs.org'
 
       # Required to ensure the build artifacts are in the packages.
-      - uses: ./.github/actions/build-js
+      - uses: $/.github/actions/build-js
         with:
           npm-package: 'true'
           django-staticfiles: 'true'
@@ -124,14 +138,9 @@ jobs:
           pip install build --upgrade
           python -m build
 
-      # TODO: enable verified publishing!
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
 
       - name: Publish NPM package
-        run: |
-          version=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          npm publish --new-version="$version"
+        run: npm publish --access public --tag=latest
         working-directory: js
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
