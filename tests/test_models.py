@@ -9,7 +9,7 @@ from django.test import TestCase, override_settings
 import pytest
 from hypothesis import given, strategies as st
 
-from cookie_consent.cache import CACHE_KEY, delete_cache
+from cookie_consent.cache import _CACHE_VERSION, CACHE_KEY, delete_cache
 from cookie_consent.models import Cookie, CookieGroup, validate_cookie_name
 
 patch_caches = override_settings(
@@ -26,11 +26,11 @@ patch_caches = override_settings(
 class CacheMixin:
     def populateCache(self):
         cache = caches["tests"]
-        cache.set(CACHE_KEY, {}, timeout=3600)
+        cache.set(CACHE_KEY, {}, timeout=3600, version=_CACHE_VERSION)
 
     def assertCacheNotPopulated(self):
         cache = caches["tests"]
-        has_key = cache.has_key(CACHE_KEY)
+        has_key = cache.has_key(CACHE_KEY, version=_CACHE_VERSION)
         self.assertFalse(has_key)
 
 
