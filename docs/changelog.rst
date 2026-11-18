@@ -2,6 +2,32 @@
 Changelog
 =========
 
+2.0.0 (2026-11-18)
+------------------
+
+Feature and maintenance release.
+
+**💥 Breaking changes**
+
+* Dropped support for Python 3.10 and Django 4.2, which are end of life.
+
+**New features**
+
+* django-cookie-consent is now compatible with cache backends that don't use pickle for
+  serialization (e.g. JSON or msgpack)
+* You can now use the ``prune_cookie_consent_logs`` management command to clean up old
+  log data.
+
+**Project maintenance**
+
+* Fixed the docs build on readthedocs.
+* Addressed Ruff linter warnings.
+* Confirmed support for Django 6.1 and Python 3.15.
+* Updated package metadata about minimum required Python/Django versions.
+* Hardened the supply chain security with Zizmor in Github actions.
+* Configured dependabot for Github actions updates.
+* Updated NPM package publishing workflow.
+
 1.0.0 (2026-02-04)
 ------------------
 
