@@ -1,6 +1,6 @@
 {
   "name": "django-cookie-consent",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Frontend code for django-cookie-consent",
   "main": "lib/index.js",
   "type": "module",
